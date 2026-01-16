@@ -1,17 +1,27 @@
-import './App.css'
-import { supabase } from "./supabaseClient";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Lobby from "./pages/Lobby.jsx";
+import Game from "./pages/Game.jsx";
 
 export default function App() {
-  const testInsert = async () => {
-    const code = "TEST" + Math.floor(Math.random() * 10000);
-    const { data, error } = await supabase.from("rooms").insert({ code }).select().single();
-    console.log("insert result:", { data, error });
-  };
+    function getPlayerId(){
+        let playerId = localStorage.getItem("player_id");
 
-  return (
-      <div style={{ padding: 20 }}>
-        <h1>TowerDuels</h1>
-        <button onClick={testInsert}>Test Supabase Insert</button>
-      </div>
-  );
+        if (!playerId) {
+            playerId = crypto.randomUUID();
+            localStorage.setItem("player_id", playerId);
+        }
+        return playerId
+    }
+    getPlayerId()
+
+    return (
+        <Routes>
+            <Route path="/" element={<Home />}/>
+            <Route path="/lobby/:code" element={<Lobby />} />
+            <Route path="/game/:code" element={<Game />} />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+    );
 }
